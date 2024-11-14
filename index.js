@@ -25,3 +25,5 @@ if (!MONGODB_URI) {
     .then(() => app.listen(PORT, () => console.log(`Connected to DB and running on http://localhost:${PORT}`)))
     .catch((error) => console.log(`Error:`, error.message));
 }
+
+
