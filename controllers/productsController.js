@@ -62,33 +62,38 @@ const getSingleProduct = async (req, res) => {
 const createNewProduct = async (req, res) => {
     try {
         const {
-            image,
             title,
             description,
             price,
             types,
+            semester,
             courseName,
-            stars,
-            numberOfReview
         } = req.body;
 
-        // Log data yang diterima
-        console.log("Data diterima:", req.body);
-
-        // Validasi tambahan (jika diperlukan)
-        if (!title || !description || !price || !types || !courseName) {
+        // Validasi dinamis
+        if (!title || !description || !price || !types) {
             return res.status(400).json({ error: "Missing required fields." });
         }
 
+        if (types === 'resume' && !courseName) {
+            return res.status(400).json({ error: "Course name is required for Resume." });
+        }
+
+        // Validasi gambar
+        if (!req.file || !req.file.path) {
+            return res.status(400).json({ error: "Image is required." });
+        }
+
+        const imageUrl = req.file.path;
+
         const newProduct = await productsModel.create({
-            image,
+            image: [imageUrl],
             title,
             description,
             price,
             types,
-            courseName,
-            stars,
-            numberOfReview
+            semester,
+            courseName: courseName || null // Tambahkan null jika tidak diperlukan
         });
 
         return res.status(200).json(newProduct);
@@ -96,7 +101,7 @@ const createNewProduct = async (req, res) => {
         console.error("Error creating product:", error);
         res.status(500).json({ error: error.message });
     }
-}
+};
 
 const updateProduct = async (req, res) => {
     try { 

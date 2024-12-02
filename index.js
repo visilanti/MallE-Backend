@@ -2,9 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const productsRoute = require('./routes/productsRoute');
 const os = require('os');
 const interfaces = os.networkInterfaces();
+
+const productsRoute = require('./routes/productsRoute');
+const transactionsRoute = require('./routes/transactionsRoute');
 
 // Fungsi untuk mendapatkan IP lokal
 function getLocalIPAddress() {
@@ -26,7 +28,8 @@ app.use(express.json());
 app.use(cors());
 
 // Route
-app.use("/api/products/", productsRoute); // Added leading slash
+app.use("/api/products/", productsRoute); 
+app.use("/api/transactions/", transactionsRoute); 
 
 // Connect to MongoDB
 const PORT = process.env.PORT;

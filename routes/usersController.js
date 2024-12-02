@@ -8,7 +8,7 @@ router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   // Cek apakah email sudah terdaftar
-  let user = await User.findOne({ email });
+  let user = await User.findOne({ email }); 
   if (user) return res.status(400).send('User already registered.');
 
   // Enkripsi password
