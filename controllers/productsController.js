@@ -16,6 +16,25 @@ const getAllProducts = async (req, res) => {
     }
 }
 
+const getProductsByUId = async (req, res) => {
+    try {
+      console.log("Fetching products for user UID:", req.user.uid); // Verifikasi uid dari token
+      
+      // Pastikan Anda menggunakan `productsModel` untuk mencari produk
+      const products = await productsModel.find({ userToken: req.user.uid }); 
+  
+      if (!products.length) {
+        return res.status(404).json({ message: "No products found for this user" });
+      }
+  
+      res.json({ products });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+
 const getProductsByType = async (req, res) => {
     try {
       // Ambil query parameter "type" dari URL
@@ -27,7 +46,7 @@ const getProductsByType = async (req, res) => {
       }
   
       // Cari produk berdasarkan `types` dengan nilai enum `resume` atau `book`
-      const products = await productsModel.find({ types: type });
+      const productsModel = await productsModel.find({ types: type });
   
       // Kembalikan hasil ke client
       return res.status(200).json(products);
@@ -61,6 +80,8 @@ const getSingleProduct = async (req, res) => {
 
 const createNewProduct = async (req, res) => {
     try {
+        const userId = req.user.uid; 
+        
         const {
             title,
             description,
@@ -93,7 +114,8 @@ const createNewProduct = async (req, res) => {
             price,
             types,
             semester,
-            courseName: courseName || null // Tambahkan null jika tidak diperlukan
+            courseName: courseName || null, // Tambahkan null jika tidak diperlukan
+            userToken: userId,
         });
 
         return res.status(200).json(newProduct);
@@ -145,5 +167,6 @@ module.exports = {
     getProductsByType,
     createNewProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getProductsByUId
 }

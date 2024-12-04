@@ -2,23 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const os = require('os');
-const interfaces = os.networkInterfaces();
+const ngrok = require('ngrok'); // Tambahkan ini
+
+const admin = require('firebase-admin');
+const credentials = require('./credential.json');
 
 const productsRoute = require('./routes/productsRoute');
 const transactionsRoute = require('./routes/transactionsRoute');
 
-// Fungsi untuk mendapatkan IP lokal
-function getLocalIPAddress() {
-  for (const name of Object.keys(interfaces)) {
-    for (const net of interfaces[name]) {
-      if (net.family === 'IPv4' && !net.internal) {
-        return net.address;
-      }
-    }
-  }
-  return 'localhost';
-}
+admin.initializeApp({
+  credential: admin.credential.cert(credentials),
+});
 
 // Initialize new express application instance
 const app = express();
@@ -32,20 +26,26 @@ app.use("/api/products/", productsRoute);
 app.use("/api/transactions/", transactionsRoute); 
 
 // Connect to MongoDB
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   console.error("MONGODB_URI is not defined. Please check your .env file.");
 } else {
   mongoose.connect(MONGODB_URI)
-  .then(() => {
-    const localIP = getLocalIPAddress();
-    app.listen(PORT, () => {
-      console.log(`Connected to DB and running on http://${localIP}:${PORT}`);
+  .then(async () => {
+    app.listen(PORT, async () => {
+      console.log(`Server running locally on http://localhost:${PORT}`);
+
+      // Tambahkan token autentikasi Ngrok
+      try {
+        await ngrok.authtoken(process.env.NGROK_AUTH_TOKEN);
+        const ngrokUrl = await ngrok.connect(PORT); // Hubungkan ke port server
+        console.log(`Ngrok tunnel opened at: ${ngrokUrl}`);
+      } catch (err) {
+        console.error("Failed to start Ngrok:", err);
+      }
     });
   })
   .catch((error) => console.log(`Error:`, error.message));
 }
-
-

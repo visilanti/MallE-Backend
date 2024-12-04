@@ -60,21 +60,21 @@ const getPurchasesbyId = async (req, res) => {
 
 // Membuat transaksi baru
 const createNewTransactions = async (req, res) => {
-  // const id_buyer = req.user.id_active; // Mengambil id_buyer dari user aktif (autentikasi)
   try {
+    const userId = req.user.uid; // Ambil UID user dari token (middleware authenticateToken)
+
     const { 
       id_product, 
-      id_seller,
-      id_buyer, 
+      id_seller, 
       total, 
-      payment_method,
+      payment_method, 
       status 
     } = req.body;
 
     const newTransaction = await TransactionModel.create({
       id_product,
       id_seller,
-      id_buyer,
+      id_buyer: userId, // UID dari autentikasi
       total,
       payment_method,
       status,
@@ -82,15 +82,16 @@ const createNewTransactions = async (req, res) => {
 
     return res.status(200).json(newTransaction);  
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     res.status(500).json({ error: 'Error creating transaction', details: error.message });
   }
 };
+
 
 // Export semua fungsi sebagai modul
 module.exports = {
   getAllTransactions,
   getSalesbyId,
   getPurchasesbyId,
-  createNewTransactions
+  createNewTransactions,
 };

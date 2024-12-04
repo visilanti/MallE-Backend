@@ -6,12 +6,14 @@ const {
     getProductsByType,
     createNewProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getProductsByUId
 } = require('../controllers/productsController');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 const path = require('path');
+const authenticateToken = require('../middleware/authMiddleware'); // Mengimpor middleware
 
 const router = express.Router();
 
@@ -21,6 +23,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Menyiapkan penyimpanan Cloudinary untuk gambar produk
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
@@ -33,10 +36,11 @@ const upload = multer({ storage });
 
 // Routes
 router.get('/', getAllProducts);
+router.get('/my-store', authenticateToken, getProductsByUId)
 router.get('/:id', getSingleProduct);
 router.get('/type', getProductsByType);
-router.post('/', upload.single('image'), createNewProduct); // Middleware upload
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+router.post('/', authenticateToken, upload.single('image'), createNewProduct); // Middleware upload dan authenticateToken
+router.put('/:id', authenticateToken, updateProduct); // Menambahkan autentikasi untuk update produk
+router.delete('/:id', authenticateToken, deleteProduct); // Menambahkan autentikasi untuk delete produk
 
 module.exports = router;

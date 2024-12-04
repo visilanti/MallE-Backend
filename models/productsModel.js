@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const productSchema = new Schema({
-    userId: {
-        type: String, 
+    userToken: {
+        type: String,
+        required: true, 
       },
     image: [String],
     title: {

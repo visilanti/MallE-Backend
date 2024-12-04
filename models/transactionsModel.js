@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const transactionSchema = new Schema({
-  id_product: { 
-    // type: mongoose.Schema.Types.ObjectId, 
-    // ref: 'Product', required: true 
+  //get from collection products
+  id_product: {  
     type: String,
     required: [true, "Description is required"]
   },
+  //get from uid
   id_seller: { 
     // type: mongoose.Schema.Types.ObjectId, 
     // ref: 'User', required: true 
@@ -27,7 +27,7 @@ const transactionSchema = new Schema({
   },
   payment_method: { 
     type: String, 
-    enum: ['gopay', 'cod'], 
+    enum: ['gopay', 'COD'], 
     required: true 
   },
   status: { 
