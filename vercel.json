@@ -1,16 +1,27 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "index.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/api/products/",
-        "dest": "routes/productRoute.js"
-      }
-    ]
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/products/.*",
+      "dest": "/routes/productsRoute.js"
+    },
+    {
+      "src": "/api/transactions/.*",
+      "dest": "/routes/transactionsRoute.js"
+    },
+    {
+      "src": "/api/users/.*",
+      "dest": "/routes/userRoute.js"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "NGROK_AUTH_TOKEN": "@ngrok_auth_token"
   }
-  
+}
