@@ -144,6 +144,40 @@ const updateProduct = async (req, res) => {
         res.status(500).json({error: error.message})
     }
 }
+  
+const updateRating = async (req, res) => {
+    const { _id, stars } = req.body;
+  
+    // Validasi input
+    if (!_id || stars === undefined) {
+      return res.status(400).json({ message: 'ID produk dan bintang (stars) diperlukan' });
+    }
+  
+    if (typeof stars !== 'number' || stars < 1 || stars > 5) {
+      return res.status(400).json({ message: 'Stars harus berupa angka antara 1 dan 5' });
+    }
+  
+    try {
+      // Update rating berdasarkan ID produk
+      const updatedProduct = await productsModel.findByIdAndUpdate(
+        _id,
+        { stars },
+        { new: true } // Mengembalikan dokumen yang sudah diperbarui
+      );
+  
+      if (!updatedProduct) {
+        return res.status(404).json({ message: 'Produk tidak ditemukan' });
+      }
+  
+      res.json({
+        message: 'Rating produk berhasil diperbarui',
+        data: updatedProduct,
+      });
+    } catch (error) {
+      console.error('Terjadi kesalahan saat memperbarui rating produk:', error);
+      res.status(500).json({ message: 'Kesalahan server' });
+    }
+  };  
 
 const deleteProduct = async (req, res) => {
     try {
@@ -168,5 +202,6 @@ module.exports = {
     createNewProduct,
     updateProduct,
     deleteProduct,
-    getProductsByUId
+    getProductsByUId,
+    updateRating
 }

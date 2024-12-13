@@ -7,7 +7,8 @@ const {
     createNewProduct,
     updateProduct,
     deleteProduct,
-    getProductsByUId
+    getProductsByUId,
+    updateRating,
 } = require('../controllers/productsController');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
@@ -42,5 +43,6 @@ router.get('/type', getProductsByType);
 router.post('/', authenticateToken, upload.single('image'), createNewProduct); // Middleware upload dan authenticateToken
 router.put('/:id', authenticateToken, updateProduct); // Menambahkan autentikasi untuk update produk
 router.delete('/:id', authenticateToken, deleteProduct); // Menambahkan autentikasi untuk delete produk
+router.put('/update-products-rating', authenticateToken, updateRating)
 
 module.exports = router;

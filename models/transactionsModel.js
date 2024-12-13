@@ -32,7 +32,7 @@ const transactionSchema = new Schema({
   },
   status: { 
     type: String, 
-    enum: ['on_process', 'saled'], 
+    enum: ['on_process', 'saled', 'cancel'], 
     // default: 'on_process' 
   },
 }, {timestamps: true});

@@ -1,6 +1,4 @@
-const mongoose = require('mongoose')
 const TransactionModel = require('../models/transactionsModel');
-const { v4: uuidv4 } = require('uuid'); // Untuk membuat ID transaksi unik
 
 // Mendapatkan semua transaksi
 const getAllTransactions = async (req, res) => {
@@ -87,6 +85,68 @@ const createNewTransactions = async (req, res) => {
   }
 };
 
+const updateOrderStatus = async (req, res) => {
+  const { orderId, status } = req.body;
+
+  if (!orderId || !status) {
+    return res.status(400).json({ message: 'Order ID and status are required' });
+  }
+
+  try {
+    const updatedOrder = await TransactionModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json({
+      message: 'Order status updated successfully',
+      data: updatedOrder,
+    });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const getPurchaseByUId = async(req, res) => {
+  try {
+    console.log("Fetching transaction for user UID:", req.user.uid); // Verifikasi uid dari token
+    
+    const purchase = await TransactionModel.find({ id_buyer: req.user.uid }); 
+
+    if (!purchase.length) {
+      return res.status(404).json({ message: "No products found for this user" });
+    }
+
+    res.json({ purchase });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+const getSaleByUId = async(req, res) => {
+  try {
+    console.log("Fetching transaction for user UID:", req.user.uid); // Verifikasi uid dari token
+    
+    const purchase = await TransactionModel.find({ id_seller: req.user.uid }); 
+
+    if (!purchase.length) {
+      return res.status(404).json({ message: "No products found for this user" });
+    }
+
+    res.json({ purchase });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 
 // Export semua fungsi sebagai modul
 module.exports = {
@@ -94,4 +154,7 @@ module.exports = {
   getSalesbyId,
   getPurchasesbyId,
   createNewTransactions,
+  getPurchaseByUId,
+  getSaleByUId,
+  updateOrderStatus,
 };
